@@ -76,9 +76,9 @@ function Main() {
 
   // Função que renderiza o card com os preços atual e antigo
   const renderCard = (product) => (
-    <div key={product.id} className="gray rounded p-4">
-      <a href={product.link} target="_blank" rel="noopener noreferrer">
-        <Image src={product.image} alt={product.name} className="w-full h-40 object-cover mb-2" width={100} height={100} />
+    <div key={product.id} className="gray rounded p-4 max-w-[250px]">
+      <a href={product.link} target="_blank" rel="noopener noreferrer" className="flex justify-center">
+        <Image src={product.image} alt={product.name} className="w-48 h-48 object-cover mb-2" width={115} height={115} />
       </a>
       <h3 className="font-semibold">{product.name}</h3>
       <div className="flex items-center gap-2">
