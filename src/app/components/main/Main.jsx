@@ -71,7 +71,7 @@ function Main() {
     <div key={product.id} className="gray rounded-lg p-4 shadow-md">
       <a href={product.link} target="_blank" rel="noopener noreferrer" className="flex justify-center">
         <div className="w-full h-48 relative">
-          <Image src={product.image} alt={product.name} layout="fill" objectFit="contain" className="mb-2" />
+          <Image src={product.image} alt={product.name} priority layout="fill" objectFit="contain" className="mb-2" />
         </div>
       </a>
       <h3 className="font-semibold my-2">{product.name}</h3>
