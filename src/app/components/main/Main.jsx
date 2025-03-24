@@ -6,18 +6,13 @@ import { collection, onSnapshot, query, orderBy } from "firebase/firestore";
 import Image from "next/image";
 
 function Main() {
-  // Estado para armazenar os produtos
   const [products, setProducts] = useState([]);
-  // Estado para controlar quantos produtos serão exibidos por categoria (quando não houver busca)
   const [visibleCounts, setVisibleCounts] = useState({});
-  // Estado para definir quantos cards cabem na largura da tela do usuário
-  const [initialLimit, setInitialLimit] = useState(0);
-  // Estado para armazenar o termo de pesquisa
   const [searchQuery, setSearchQuery] = useState("");
-  // Estado para controle de carregamento
   const [loading, setLoading] = useState(true);
+  const [initialLimit, setInitialLimit] = useState(0);
 
-  // Função que calcula o número de cards com base na largura da tela
+  // Calcula quantos cards cabem na tela com base na largura atual
   const calculateLimit = () => {
     const width = window.innerWidth;
     let limit = 2; // valor padrão
@@ -33,13 +28,14 @@ function Main() {
     return limit;
   };
 
-  // Define o initialLimit ao montar o componente e atualiza em caso de redimensionamento
+  // Define o initialLimit ao montar e atualiza em caso de redimensionamento da tela
   useEffect(() => {
     const limit = calculateLimit();
     setInitialLimit(limit);
 
     const handleResize = () => {
-      setInitialLimit(calculateLimit());
+      const newLimit = calculateLimit();
+      setInitialLimit(newLimit);
     };
 
     window.addEventListener("resize", handleResize);
@@ -60,10 +56,8 @@ function Main() {
     return () => unsubscribe();
   }, []);
 
-  // Filtrar os produtos com base na pesquisa (por nome)
   const filteredProducts = products.filter((product) => product.name.toLowerCase().includes(searchQuery.toLowerCase()));
 
-  // Agrupar os produtos por categoria somente quando não houver pesquisa
   const groupedProducts = products.reduce((acc, product) => {
     const category = product.category || "Sem Categoria";
     if (!acc[category]) acc[category] = [];
@@ -71,29 +65,28 @@ function Main() {
     return acc;
   }, {});
 
-  // Obter as categorias em ordem alfabética
   const sortedCategories = Object.keys(groupedProducts).sort((a, b) => a.localeCompare(b));
 
-  // Função que renderiza o card com os preços atual e antigo
   const renderCard = (product) => (
-    <div key={product.id} className="gray rounded p-4 max-w-[230px]">
+    <div key={product.id} className="gray rounded-lg p-4 shadow-md">
       <a href={product.link} target="_blank" rel="noopener noreferrer" className="flex justify-center">
-        <Image src={product.image} alt={product.name} className="w-48 h-48 object-cover mb-2" width={115} height={115} />
+        <div className="w-full h-48 relative">
+          <Image src={product.image} alt={product.name} layout="fill" objectFit="contain" className="mb-2" />
+        </div>
       </a>
-      <h3 className="font-semibold">{product.name}</h3>
+      <h3 className="font-semibold my-2">{product.name}</h3>
       <div className="flex items-center gap-2">
         {product.oldPrice && <span className="text-gray-500 line-through">{product.oldPrice}</span>}
-        <span className="font-bold text-2xl">{product.price}</span>
+        <span className="font-bold text-lg text-blue-700">{product.price}</span>
       </div>
-      <p>{product.description}</p>
+      <p className="text-sm text-gray-700 mb-2">{product.description}</p>
       <a href={product.link} target="_blank" rel="noopener noreferrer">
-        <button className="mt-2 mb-2 p-2 bg-blue-800 hover:bg-blue-900 cursor-pointer">COMPRAR AGORA</button>
+        <button className="w-full p-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md">COMPRAR AGORA</button>
       </a>
-      <p className="text-sm text-gray-600">Categoria: {product.category}</p>
+      <p className="text-xs text-gray-500 mt-2">Categoria: {product.category}</p>
     </div>
   );
 
-  // Se estiver carregando, exibe o spinner
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -104,7 +97,6 @@ function Main() {
 
   return (
     <div className="p-4">
-      {/* Campo de pesquisa */}
       <div className="mb-4">
         <input
           type="text"
@@ -116,24 +108,27 @@ function Main() {
       </div>
 
       {searchQuery ? (
-        // Se houver termo de busca, mostra os produtos filtrados sem agrupamento
         <div>
           <h2 className="text-2xl font-bold mt-4 mb-2">Resultados da pesquisa</h2>
-          <div className="flex gap-4 flex-wrap">{filteredProducts.map(renderCard)}</div>
+          <div className="grid gap-4 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+            {filteredProducts.map(renderCard)}
+          </div>
         </div>
       ) : (
-        // Se não houver pesquisa, mostra os produtos agrupados por categoria
         sortedCategories.map((category) => {
           const categoryProducts = groupedProducts[category];
+          // Se não houver contagem definida para a categoria, usa o initialLimit calculado
           const visibleCount = visibleCounts[category] || initialLimit;
 
           return (
             <div key={category} className="mb-8">
               <h2 className="text-2xl font-bold mt-4 mb-2">{category} em alta</h2>
-              <div className="flex gap-4 flex-wrap">{categoryProducts.slice(0, visibleCount).map(renderCard)}</div>
+              <div className="grid gap-4 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+                {categoryProducts.slice(0, visibleCount).map(renderCard)}
+              </div>
               {visibleCount < categoryProducts.length && (
                 <button
-                  className="mt-4 p-2 underline cursor-pointer text-white rounded"
+                  className="mt-4 p-2 bg-gray-300 hover:bg-gray-400 text-black rounded-md"
                   onClick={() =>
                     setVisibleCounts((prev) => ({
                       ...prev,
