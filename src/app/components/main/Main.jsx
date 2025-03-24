@@ -79,7 +79,7 @@ function Main() {
         {product.oldPrice && <span className="text-gray-500 line-through">{product.oldPrice}</span>}
         <span className="font-bold text-lg text-blue-700">{product.price}</span>
       </div>
-      <p className="text-sm text-gray-700 mb-2">{product.description}</p>
+      <p className="text-sm text-gray-400 mb-2">{product.description}</p>
       <a href={product.link} target="_blank" rel="noopener noreferrer">
         <button className="w-full p-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md">COMPRAR AGORA</button>
       </a>
