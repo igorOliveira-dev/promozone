@@ -128,7 +128,7 @@ function Main() {
               </div>
               {visibleCount < categoryProducts.length && (
                 <button
-                  className="mt-4 p-2 bg-gray-300 hover:bg-gray-400 text-black rounded-md"
+                  className="mt-4 p-2 underline"
                   onClick={() =>
                     setVisibleCounts((prev) => ({
                       ...prev,
@@ -136,7 +136,7 @@ function Main() {
                     }))
                   }
                 >
-                  Expandir categoria
+                  Ver mais {category}
                 </button>
               )}
               <hr className="mb-4 mt-4" />
